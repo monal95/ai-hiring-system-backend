@@ -18,6 +18,16 @@ A Flask-based backend powering an AI-driven recruitment platform with Groq LLM i
 - **Enhanced Interview** - Multi-stage interview management
 - **AI Evaluation** - Automated response scoring and feedback
 
+### 🔒 Enterprise Proctoring System
+
+Backend support for real-time interview integrity monitoring:
+
+- **Violation Recording** - Store and track all proctoring violations
+- **Risk Level Calculation** - Automatic risk assessment based on violation patterns
+- **Proctoring Reports** - Comprehensive violation summaries for HR review
+- **Session Statistics** - Time tracking, focus analytics, and behavioral data
+- **Integration with Interview Completion** - Proctoring data included in final evaluation
+
 ### Integrations
 
 - **Groq LLM (LLaMA 3.3)** - AI-generated content (job descriptions, emails, posts)
@@ -270,6 +280,77 @@ Content-Type: application/json
 | GET    | `/api/auth/linkedin/status`   | Check connection status   |
 | POST   | `/api/linkedin/share/job`     | Share job to LinkedIn     |
 | POST   | `/api/linkedin/auto-post`     | Auto-post job on creation |
+
+### 🔒 Proctoring Endpoints
+
+| Method | Endpoint                                      | Description                          |
+| ------ | --------------------------------------------- | ------------------------------------ |
+| POST   | `/api/interview/<token>/proctoring-violation` | Record a proctoring violation        |
+| GET    | `/api/interview/<token>/proctoring-report`    | Get proctoring report for interview  |
+| POST   | `/api/interview/<token>/proctoring-stats`     | Update proctoring session statistics |
+
+#### Record Proctoring Violation
+
+```bash
+POST /api/interview/<token>/proctoring-violation
+Content-Type: application/json
+
+{
+  "violation": {
+    "type": "tab_switch",
+    "severity": "high",
+    "message": "Switched to another tab",
+    "timestamp": "2026-01-20T10:30:00Z"
+  }
+}
+```
+
+**Violation Types:**
+
+- `tab_switch` - Tab switch detected
+- `focus_lost` - Browser lost focus
+- `face_not_detected` - Face not visible
+- `multiple_faces` - Multiple faces detected
+- `copy_attempt` - Copy action blocked
+- `paste_attempt` - Paste action blocked
+- `fullscreen_exit` - Exited fullscreen mode
+- `keyboard_shortcut` - Blocked keyboard shortcut
+
+**Severity Levels:**
+
+- `low` - Minor infractions
+- `medium` - Moderate violations
+- `high` - Serious violations
+- `critical` - Critical integrity concerns
+
+#### Get Proctoring Report
+
+```bash
+GET /api/interview/<token>/proctoring-report
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "proctoring_report": {
+    "total_violations": 5,
+    "violation_types": {
+      "tab_switch": 2,
+      "focus_lost": 3
+    },
+    "severity_breakdown": {
+      "low": 1,
+      "medium": 2,
+      "high": 2,
+      "critical": 0
+    },
+    "risk_level": "medium",
+    "violations": [...]
+  }
+}
+```
 
 ## 🔐 LinkedIn OAuth Setup
 
